@@ -1,0 +1,19 @@
+# Déploiement du serveur MyMine (Socket.io + API)
+# https://render.com → New → Blueprint → repo GitHub
+services:
+  - type: web
+    name: mymine-api
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: CLIENT_URL
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false

@@ -1,0 +1,5 @@
+# Vercel ne sert que le client — le serveur Socket.io se déploie ailleurs (Render, etc.)
+server/
+scripts/
+files/
+agent-transcripts/

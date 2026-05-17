@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyMine — Rejoindre la réunion</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080810;--bg2:#0f0f18;--bg3:#161624;
+  --border:#222234;--text:#e0e0f0;--muted:#5a5a80;
+  --font:'DM Sans',sans-serif;
+}
+html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--font);display:flex;align-items:center;justify-content:center;padding:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:36px;width:100%;max-width:480px}
+.logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:600;margin-bottom:32px}
+.logo-dot{width:32px;height:32px;border-radius:10px;background:#1a9ef5;display:flex;align-items:center;justify-content:center;font-size:16px}
+h1{font-size:22px;font-weight:500;margin-bottom:8px}
+p{font-size:14px;color:var(--muted);margin-bottom:28px;line-height:1.6}
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500}
+input{width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:14px;font-family:var(--font);margin-bottom:20px}
+input:focus{outline:none;border-color:#1a9ef5}
+.profiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+.profile-card{
+  border:1.5px solid var(--border);border-radius:14px;padding:16px 10px;
+  text-align:center;cursor:pointer;transition:all .2s;background:var(--bg3);
+}
+.profile-card:hover{border-color:var(--muted)}
+.profile-card.selected{border-color:currentColor}
+.profile-card.blind{color:#7c6cf0}
+.profile-card.blind.selected{background:rgba(124,108,240,.08)}
+.profile-card.deaf{color:#1a9ef5}
+.profile-card.deaf.selected{background:rgba(26,158,245,.08)}
+.profile-card.standard{color:#22d47a}
+.profile-card.standard.selected{background:rgba(34,212,122,.08)}
+.p-icon{font-size:28px;margin-bottom:8px}
+.p-name{font-size:12px;font-weight:600}
+.p-desc{font-size:10px;color:var(--muted);margin-top:3px;line-height:1.4}
+.join-btn{
+  width:100%;padding:13px;border-radius:12px;border:none;
+  background:#1a9ef5;color:#fff;font-size:15px;font-weight:600;
+  cursor:pointer;font-family:var(--font);transition:background .15s;
+}
+.join-btn:hover{background:#1280cc}
+.flowise-note{margin-top:16px;font-size:11px;color:var(--muted);text-align:center;line-height:1.6}
+code{font-family:'DM Mono',monospace;background:var(--bg3);padding:2px 5px;border-radius:4px;font-size:11px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">
+    <div class="logo-dot">M</div>
+    MyMine
+  </div>
+  <h1>Rejoindre la réunion</h1>
+  <p>Choisissez votre profil d'accessibilité pour une expérience adaptée à vos besoins.</p>
+  <label>Code ou nom de réunion</label>
+  <input type="text" id="meeting-code" placeholder="ex: reunion-budget-q3" value="reunion-budget-q3">
+  <label>Votre profil</label>
+  <div class="profiles" role="radiogroup" aria-label="Profil accessibilité">
+    <div class="profile-card blind selected" id="p-blind" onclick="selectProfile('blind')" role="radio" aria-checked="true" tabindex="0">
+      <div class="p-icon">🦯</div>
+      <div class="p-name">Aveugle</div>
+      <div class="p-desc">Audio-first, TTS, navigation vocale</div>
+    </div>
+    <div class="profile-card deaf" id="p-deaf" onclick="selectProfile('deaf')" role="radio" aria-checked="false" tabindex="0">
+      <div class="p-icon">👋</div>
+      <div class="p-name">Sourd/Muet</div>
+      <div class="p-desc">Sous-titres, LSF, alertes visuelles</div>
+    </div>
+    <div class="profile-card standard" id="p-standard" onclick="selectProfile('standard')" role="radio" aria-checked="false" tabindex="0">
+      <div class="p-icon">👤</div>
+      <div class="p-name">Standard</div>
+      <div class="p-desc">Interface mixte type Google Meet</div>
+    </div>
+  </div>
+  <button class="join-btn" onclick="joinMeeting()">Rejoindre la réunion →</button>
+  <div class="flowise-note">
+    Connecté à Flowise sur <code>localhost:3000</code><br>
+    Modifiez <code>VOTRE_CHATFLOW_ID</code> dans chaque fichier HTML après import.
+  </div>
+</div>
+<script>
+let selected='blind';
+function selectProfile(p){
+  selected=p;
+  ['blind','deaf','standard'].forEach(id=>{
+    const el=document.getElementById('p-'+id);
+    el.classList.toggle('selected',id===p);
+    el.setAttribute('aria-checked',id===p?'true':'false');
+  });
+}
+function joinMeeting(){
+  const pages={blind:'mymine_blind.html',deaf:'mymine_deaf.html',standard:'mymine_standard.html'};
+  window.location.href=pages[selected];
+}
+document.querySelectorAll('.profile-card').forEach(el=>{
+  el.addEventListener('keydown',e=>{ if(e.key===' '||e.key==='Enter') el.click(); });
+});
+</script>
+</body>
+</html>
