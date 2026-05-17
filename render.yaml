@@ -1,19 +1,21 @@
-# Déploiement du serveur MyMine (Socket.io + API)
-# https://render.com → New → Blueprint → repo GitHub
+# MyMine tout-en-un sur Render (API Socket.io + interface React)
+# Dashboard Render → New → Blueprint → repo GitHub
 services:
   - type: web
-    name: mymine-api
+    name: mymine
     runtime: node
     plan: free
-    buildCommand: npm install
+    buildCommand: npm install && npm ci --prefix client && npm run build --prefix client
     startCommand: npm start
-    healthCheckPath: /
+    healthCheckPath: /health
     envVars:
+      - key: NODE_ENV
+        value: production
       - key: NODE_VERSION
         value: "20"
-      - key: CLIENT_URL
-        sync: false
       - key: GROQ_API_KEY
         sync: false
       - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ELEVENLABS_API_KEY
         sync: false

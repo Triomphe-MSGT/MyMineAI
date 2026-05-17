@@ -3,6 +3,9 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { setupRoomHandlers } from './roomManager.js';
 import { setupSignaling } from './signalingHandler.js';
 import { setupChat } from './chatHandler.js';
@@ -11,15 +14,21 @@ import { setupMymineFlow, runMymineFlow, fanoutTranscription } from './mymineFlo
 import { describeImage, generateAISummary } from './aiProxy.js';
 import { healthPayload } from './health.js';
 
-const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const CLIENT_DIST = path.join(__dirname, '..', 'client', 'dist');
+const HAS_CLIENT_BUILD = fs.existsSync(path.join(CLIENT_DIST, 'index.html'));
+
+const RENDER_URL = process.env.RENDER_EXTERNAL_URL || '';
+const CLIENT_URL = process.env.CLIENT_URL || RENDER_URL || 'http://localhost:5173';
 const ALLOWED_ORIGINS = Array.from(
   new Set([
     CLIENT_URL,
+    RENDER_URL,
     'http://localhost:5173',
     'http://127.0.0.1:5173',
     'http://localhost:5174',
     'http://127.0.0.1:5174',
-  ]),
+  ].filter(Boolean)),
 );
 
 const corsOrigin = (origin, cb) => {
@@ -32,6 +41,8 @@ const corsOrigin = (origin, cb) => {
   if (/^http:\/\/10\.\d{1,3}\.\d{1,3}\.\d{1,3}(:\d+)?$/.test(origin)) return cb(null, true);
   // Vercel previews & production
   if (/^https:\/\/[\w.-]+\.vercel\.app$/.test(origin)) return cb(null, true);
+  // Render (app tout-en-un)
+  if (/^https:\/\/[\w.-]+\.onrender\.com$/.test(origin)) return cb(null, true);
   return cb(null, ALLOWED_ORIGINS.includes(origin));
 };
 
@@ -45,8 +56,8 @@ const io = new Server(httpServer, {
 app.use(cors({ origin: corsOrigin }));
 app.use(express.json({ limit: '10mb' }));
 
-app.get('/', (_req, res) => res.json(healthPayload()));
 app.get('/health', (_req, res) => res.json(healthPayload()));
+app.get('/api/health', (_req, res) => res.json(healthPayload()));
 
 // REST endpoint : description d'image (partage d'écran)
 app.post('/api/describe-image', async (req, res) => {
@@ -97,9 +108,30 @@ io.on('connection', (socket) => {
   setupMymineFlow(io, socket);
 });
 
+// Production Render : sert le client React compilé (même origine → Socket.io sans config)
+if (HAS_CLIENT_BUILD) {
+  app.use(express.static(CLIENT_DIST, { index: false, fallthrough: true }));
+  app.get('*', (req, res, next) => {
+    const p = req.path;
+    if (p.startsWith('/api') || p.startsWith('/socket.io')) return next();
+    // Fichier statique manquant → vrai 404 (pas index.html)
+    if (/\.[a-z0-9]+$/i.test(p) && p !== '/mymine-logo.svg') {
+      const filePath = path.join(CLIENT_DIST, p);
+      if (!fs.existsSync(filePath)) return res.status(404).send('Not found');
+    }
+    res.sendFile(path.join(CLIENT_DIST, 'index.html'), (err) => {
+      if (err) next(err);
+    });
+  });
+} else {
+  app.get('/', (_req, res) => res.json({ ...healthPayload(), hint: 'Run npm run build to serve the client.' }));
+}
+
 const PORT = Number(process.env.PORT || 3001);
 const HOST = process.env.HOST || '0.0.0.0';
 
 httpServer.listen(PORT, HOST, () => {
-  console.log(`MyMine server running on http://${HOST}:${PORT}`);
+  const mode = HAS_CLIENT_BUILD ? 'API + client' : 'API only (dev: use Vite on :5173)';
+  console.log(`MyMine ${mode} → http://${HOST}:${PORT}`);
+  if (RENDER_URL) console.log(`Public URL: ${RENDER_URL}`);
 });

@@ -92,7 +92,7 @@ export function ProfileSelectPage() {
         <header className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5">
             <img
-              src="/mymine-logo.png"
+              src="/mymine-logo.svg"
               alt="MyMine AI"
               className="h-9 w-9"
               style={{ filter: 'drop-shadow(0 0 10px rgba(61,139,240,0.4))' }}

@@ -88,7 +88,7 @@ export function SplashScreen() {
               />
               {/* Logo */}
               <motion.img
-                src="/mymine-logo.png"
+                src="/mymine-logo.svg"
                 alt="MyMine AI"
                 className="relative h-32 w-32 select-none"
                 draggable={false}

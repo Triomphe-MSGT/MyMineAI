@@ -103,7 +103,7 @@ function Nav() {
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-6">
           <Link to="/" className="flex items-center gap-2.5" style={{ fontFamily: FONT_TITLE }}>
             <img
-              src="/mymine-logo.png"
+              src="/mymine-logo.svg"
               alt="MyMine"
               className="h-9 w-9 select-none"
               draggable={false}
@@ -776,7 +776,7 @@ function PhoneTopBar({ title, subtitle, accent = COLORS.blue }) {
   return (
     <div className="flex items-center justify-between border-b px-3 pb-2 pt-3" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
       <div className="flex items-center gap-2">
-        <img src="/mymine-logo.png" alt="" className="h-5 w-5" />
+        <img src="/mymine-logo.svg" alt="" className="h-5 w-5" />
         <div>
           <div className="text-[11px] font-bold text-white" style={{ fontFamily: FONT_BODY }}>{title}</div>
           <div className="text-[9px]" style={{ color: 'rgba(255,255,255,0.55)', fontFamily: FONT_MONO }}>{subtitle}</div>
@@ -1420,7 +1420,7 @@ function Footer() {
         <div className="grid grid-cols-2 gap-10 md:grid-cols-5">
           <div className="col-span-2">
             <Link to="/" className="flex items-center gap-2.5">
-              <img src="/mymine-logo.png" alt="MyMine" className="h-9 w-9" style={{ filter: 'drop-shadow(0 2px 10px rgba(61,139,240,0.30))' }} />
+              <img src="/mymine-logo.svg" alt="MyMine" className="h-9 w-9" style={{ filter: 'drop-shadow(0 2px 10px rgba(61,139,240,0.30))' }} />
               <span className="text-xl font-extrabold" style={{ color: COLORS.text, fontFamily: FONT_TITLE }}>
                 MyMine
               </span>
