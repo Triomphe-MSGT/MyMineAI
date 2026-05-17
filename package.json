@@ -1,6 +1,7 @@
 {
   "name": "mymine",
   "scripts": {
+    "postinstall": "node scripts/postinstall.mjs",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "test:3": "bash scripts/test-3-users.sh",
     "test:3:links": "bash scripts/test-3-users.sh --links-only --no-start",

@@ -5,7 +5,8 @@ services:
     name: mymine
     runtime: node
     plan: free
-    buildCommand: bash scripts/render-build.sh
+    # « npm install » suffit : postinstall compile le client sur Render
+    buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /health
     envVars:
