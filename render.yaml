@@ -9,10 +9,12 @@ services:
     startCommand: npm start
     healthCheckPath: /health
     envVars:
-      - key: NODE_ENV
-        value: production
       - key: NODE_VERSION
         value: "20"
+      - key: NPM_CONFIG_PRODUCTION
+        value: "false"
+      - key: NODE_ENV
+        value: production
       - key: GROQ_API_KEY
         sync: false
       - key: ANTHROPIC_API_KEY

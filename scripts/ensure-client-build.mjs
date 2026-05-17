@@ -1,8 +1,7 @@
 /**
- * Sur Render : si le build dashboard a été oublié, compile le client au démarrage.
- * (évite la page JSON « Run npm run build »)
+ * Vérifie que client/dist existe avant le démarrage du serveur.
+ * Le build doit avoir lieu dans la phase « Build » Render (npm run build), pas au démarrage.
  */
-import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -16,15 +15,19 @@ if (fs.existsSync(indexHtml)) {
 
 const onRender = process.env.RENDER === 'true' || Boolean(process.env.RENDER_SERVICE_ID);
 
-if (!onRender) {
-  console.warn('[MyMine] client/dist absent — en local : npm run build');
-  process.exit(0);
-}
+console.error(`
+[MyMine] ERREUR : le client React n'est pas compilé (client/dist/index.html absent).
 
-console.log('[MyMine] client/dist absent sur Render → build automatique…');
-execSync('bash scripts/render-build.sh', { cwd: root, stdio: 'inherit' });
+Sur Render → Settings → Build & Deploy :
+  Build Command : npm run build
+  Start Command : npm start
 
-if (!fs.existsSync(indexHtml)) {
-  console.error('[MyMine] Échec du build client.');
+Puis « Manual Deploy » → « Clear build cache & deploy ».
+`);
+
+if (onRender) {
   process.exit(1);
 }
+
+console.warn('[MyMine] En local : npm run build && npm start');
+process.exit(0);
