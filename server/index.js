@@ -124,7 +124,14 @@ if (HAS_CLIENT_BUILD) {
     });
   });
 } else {
-  app.get('/', (_req, res) => res.json({ ...healthPayload(), hint: 'Run npm run build to serve the client.' }));
+  app.get('/', (_req, res) => {
+    res.status(503).json({
+      ...healthPayload(),
+      error: 'client_not_built',
+      hint: 'Exécutez « npm run build » puis « npm start », ou configurez Render : Build Command = npm run build',
+      distPath: CLIENT_DIST,
+    });
+  });
 }
 
 const PORT = Number(process.env.PORT || 3001);
