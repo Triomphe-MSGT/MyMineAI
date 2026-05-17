@@ -1,11 +1,15 @@
 /**
- * Sur Render, le Build Command est souvent seulement « npm install ».
- * Ce script compile alors le client React pendant l'installation.
+ * Sur Render : compile le client après « npm install » (Build Command par défaut).
+ * Ne doit jamais rappeler « npm install » à la racine (boucle infinie).
  */
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'url';
+
+if (process.env.MYMINE_CLIENT_BUILD === '1') {
+  process.exit(0);
+}
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const indexHtml = path.join(root, 'client', 'dist', 'index.html');
@@ -14,7 +18,6 @@ if (fs.existsSync(indexHtml)) {
   process.exit(0);
 }
 
-// Render : RENDER=true au runtime, CI=true pendant le build
 const onRender =
   process.env.RENDER === 'true' ||
   Boolean(process.env.RENDER_SERVICE_ID) ||
@@ -31,7 +34,7 @@ execSync('bash scripts/render-build.sh', {
   stdio: 'inherit',
   env: {
     ...process.env,
+    MYMINE_CLIENT_BUILD: '1',
     NPM_CONFIG_PRODUCTION: 'false',
-    NODE_ENV: 'development',
   },
 });

@@ -1,15 +1,11 @@
 #!/usr/bin/env bash
-# Build client Vite sur Render (NODE_ENV=production omet sinon les devDependencies → vite introuvable).
+# Compile uniquement le client Vite (sans « npm install » à la racine → évite boucle postinstall).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 export NPM_CONFIG_PRODUCTION=false
-export NODE_ENV=development
 
-echo "▶ npm install (racine)"
-npm install
-
-echo "▶ npm install + build (client, avec devDependencies)"
+echo "▶ npm install + build (client)"
 cd client
 if [ -f package-lock.json ]; then
   npm ci --include=dev
