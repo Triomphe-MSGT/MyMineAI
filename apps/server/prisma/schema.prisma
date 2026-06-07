@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  rooms        RoomParticipant[]
+  messages     Message[]
+}
+
+model Room {
+  id              String   @id @default(cuid())
+  name            String?
+  slug            String   @unique
+  createdBy       String
+  isActive        Boolean  @default(true)
+  maxParticipants Int      @default(10)
+  createdAt       DateTime @default(now())
+
+  participants RoomParticipant[]
+  messages     Message[]
+}
+
+model RoomParticipant {
+  id               String    @id @default(cuid())
+  userId           String
+  roomId           String
+  socketId         String
+  isMuted          Boolean   @default(false)
+  isVideoOn        Boolean   @default(true)
+  isScreenSharing  Boolean   @default(false)
+  joinedAt         DateTime  @default(now())
+  leftAt           DateTime?
+
+  user User @relation(fields: [userId], references: [id])
+  room Room @relation(fields: [roomId], references: [id])
+}
+
+model Message {
+  id        String      @id @default(cuid())
+  roomId    String
+  userId    String
+  content   String
+  type      MessageType @default(TEXT)
+  createdAt DateTime    @default(now())
+
+  room Room @relation(fields: [roomId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+}
+
+enum MessageType {
+  TEXT
+  SYSTEM
+}

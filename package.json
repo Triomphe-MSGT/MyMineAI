@@ -1,27 +1,24 @@
 {
-  "name": "mymine",
+  "name": "mymeet",
+  "private": true,
+  "packageManager": "pnpm@10.32.1",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "postinstall": "node scripts/postinstall.mjs",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "test:3": "bash scripts/test-3-users.sh",
-    "test:3:links": "bash scripts/test-3-users.sh --links-only --no-start",
-    "server": "node --watch server/index.js",
-    "client": "cd client && npm run dev",
-    "build": "bash scripts/render-build.sh",
-    "prestart": "node scripts/ensure-client-build.mjs",
-    "start": "node server/index.js"
-  },
-  "dependencies": {
-    "@anthropic-ai/sdk": "^0.24.0",
-    "build": "^0.1.4",
-    "cors": "^2.8.5",
-    "dotenv": "^16.0.0",
-    "express": "^4.18.0",
-    "socket.io": "^4.7.0",
-    "uuid": "^9.0.0"
+    "dev": "concurrently \"pnpm --filter @mymeet/server dev\" \"pnpm --filter @mymeet/web dev\"",
+    "dev:server": "pnpm --filter @mymeet/server dev",
+    "dev:web": "pnpm --filter @mymeet/web dev",
+    "build": "pnpm --filter @mymeet/server build && pnpm --filter @mymeet/web build",
+    "db:setup": "pnpm --filter @mymeet/server db:setup",
+    "db:generate": "pnpm --filter @mymeet/server db:generate",
+    "db:push": "pnpm --filter @mymeet/server db:push",
+    "db:studio": "pnpm --filter @mymeet/server db:studio",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down"
   },
   "devDependencies": {
-    "concurrently": "^8.0.0"
-  },
-  "type": "module"
+    "concurrently": "^9.1.2"
+  }
 }

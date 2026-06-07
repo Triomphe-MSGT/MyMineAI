@@ -1,11 +1,8 @@
 node_modules/
-client/node_modules/
-client/dist/
 dist/
+build/
 .env
-client/.env
-.env.local
-client/.env.local
+!.env.example
 *.log
 .DS_Store
-.vercel
+apps/server/prisma/migrations/
